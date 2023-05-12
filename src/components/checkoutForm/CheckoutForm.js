@@ -48,3 +48,53 @@ const CheckoutForm = () => {
     }
 
     setIsLoading(true);
+
+    const confirmPayment = await stripe
+    .confirmPayment({
+      elements,
+      redirect: "if_required",
+    })
+    .then((result) => {
+      if (result.error) {
+        toast.error(result.error.message);
+        setMessage(result.error.message);
+        return;
+      }
+      if (result.paymentIntent) {
+        if (result.paymentIntent.status === "succeeded") {
+          setIsLoading(false);
+          toast.success("Payment successful");
+          saveOrder();
+        }
+      }
+    });
+  setIsLoading(false);
+};
+
+const saveOrder = () => {
+  const today = new Date();
+  //tarih bilgisi
+  const date = today.toDateString();
+  //saat bilgisi
+  const time = today.toLocaleTimeString();
+  const orderConfig = {
+    userID,
+    userEmail,
+    orderDate: date,
+    orderTime: time,
+    orderAmount: cartTotalAmount,
+    orderStatus: "Order Placed...",
+    cartItems,
+    shippingAddress,
+    // şu anki zaman firebase de timestamp.now() ile alınır toDate() ile JS Date objesine dönüştürülür  
+    createdAt: Timestamp.now().toDate(),
+  };
+  try {
+    addDoc(collection(db, "orders"), orderConfig);
+    toast.success("Order saved");
+    dispatch(CLEAR_CART());
+    navigate("/checkout-success");
+  } catch (error) {
+    toast.error(error.message);
+  }
+};
