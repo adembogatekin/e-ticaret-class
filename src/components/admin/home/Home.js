@@ -12,10 +12,20 @@ import { CALC_TOTAL_ORDER_AMOUNT, selectOrderHistory, selectTotalOrderAmount, ST
 import useFetchCollection from '../../../customHooks/useFetchCollection'
 import Chart from '../../chart/Chart'
 
+const earningIcon = <AiFillDollarCircle size={30} color="#b624ff" />
+const productIcon = <BsCart4 size={30} color="#1f93ff" />
+const ordersIcon = <FaCartArrowDown size={30} color="orangered" />
+
 const Home = () => {
-  return (
-    <div>Home</div>
-  )
-}
+  const products = useSelector(selectProducts)
+  const orders = useSelector(selectOrderHistory)
+  const totalOrderAmount = useSelector(selectTotalOrderAmount)
+
+  const fbProducts = useFetchCollection("products")
+  const {data} = useFetchCollection("orders")
+
+  const dispatch = useDispatch()
+
+
 
 export default Home
