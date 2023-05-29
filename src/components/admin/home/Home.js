@@ -1,5 +1,4 @@
 ////admin panelindeki home componenti
-////admin panelindeki home componenti
 import React, { useEffect } from 'react'
 import InfoBox from '../../infoBox/InfoBox'
 import styles from "./Home.module.scss"
@@ -11,6 +10,7 @@ import { selectProducts, STORE_PRODUCTS } from '../../../redux/slice/productSlic
 import { CALC_TOTAL_ORDER_AMOUNT, selectOrderHistory, selectTotalOrderAmount, STORE_ORDERS } from '../../../redux/slice/orderSlice'
 import useFetchCollection from '../../../customHooks/useFetchCollection'
 import Chart from '../../chart/Chart'
+
 
 const earningIcon = <AiFillDollarCircle size={30} color="#b624ff" />
 const productIcon = <BsCart4 size={30} color="#1f93ff" />
@@ -26,6 +26,28 @@ const Home = () => {
 
   const dispatch = useDispatch()
 
+  useEffect(()=> {
+    dispatch(STORE_PRODUCTS({
+      products: fbProducts.data
+    }))
+    dispatch(STORE_ORDERS(data))
 
+    dispatch(CALC_TOTAL_ORDER_AMOUNT())
+  },[dispatch, data, fbProducts])
+
+  return (
+    <div>
+      <h2>Admin Home</h2>
+      <div className={styles["info-box"]}>
+        <InfoBox cardClass={`${styles.card} ${styles.card1}`} title={"Earnings"} count={`$${totalOrderAmount}`} icon={earningIcon} />
+        <InfoBox cardClass={`${styles.card} ${styles.card2}`} title={"Products"} count={products.length} icon={productIcon} />
+        <InfoBox cardClass={`${styles.card} ${styles.card3}`} title={"Orders"} count={orders.length} icon={ordersIcon} />
+      </div>
+      <div>
+        <Chart />
+      </div>
+    </div>
+  )
+}
 
 export default Home
